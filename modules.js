@@ -1,8 +1,4 @@
-// const people = require('./people');
-
-// console.log(people);
-
-// const data = require('./people');
+const data = require('./people');
 
 // console.log(data.people, data.ages);
 
@@ -13,7 +9,3 @@ console.log(people, ages);
 const os = require('os');
 
 console.log(os.platform(), os.homedir());
-
-
-
-

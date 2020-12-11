@@ -1,6 +1,6 @@
 const speak = () => {
   console.log('hello, ninjas');
-}
+};
 
 speak();
 
@@ -8,21 +8,14 @@ speak();
 
 // console.log(global);
 
-// global.setTimeout(() => {
-//   console.log('in the timeout');
-// }, 3000);
-
 setTimeout(() => {
-  console.log('in the timeout');
+  console.log('cleared');
   clearInterval(int);
 }, 3000);
 
 const int = setInterval(() => {
-  console.log('in the interval');
+  console.log('repeat until...');
 }, 1000);
 
 console.log(__dirname);
 console.log(__filename);
-
-// no access to DOM methods
-console.log(document.querySelector);
