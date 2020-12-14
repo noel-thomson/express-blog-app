@@ -8,13 +8,21 @@ app.listen(3000);
 
 // register view engine
 app.set('view engine', 'ejs');
-// app.set('views', 'myviews');
 
 app.get('/', (req, res) => {
   const blogs = [
-    {title: 'Yoshi finds eggs', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'Mario finds stars', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'How to defeat bowser', snippet: 'Lorem ipsum dolor sit amet consectetur'},
+    {
+      title: 'Luigi jumps high', 
+      snippet: 'Lorem ipsum dolor sit',
+    },
+    {
+      title: 'Mario finds stars',
+      snippet: 'Lorem ipsum dolor sit',
+    },
+    {
+      title: 'How to defeat bowser',
+      snippet: 'Lorem ipsum dolor sit',
+    },
   ];
   res.render('index', { title: 'Home', blogs });
 });
@@ -31,3 +39,8 @@ app.get('/blogs/create', (req, res) => {
 app.use((req, res) => {
   res.status(404).render('404', { title: '404' });
 });
+
+//
+
+// set alternative folder for views
+// app.set('views', 'my-views');
