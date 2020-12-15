@@ -9,32 +9,57 @@ const app = express();
 
 // connect to mongodb & listen for requests
 const dbURI =
-  "mongodb+srv://netninja:test1234@net-ninja-tuts-del96.mongodb.net/node-tuts";
+  "mongodb+srv://johnsmith:mongo1234@cluster0.p9iyl.mongodb.net/blogs-db?retryWrites=true&w=majority";
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => app.listen(3000))
+  .then((result) => {
+    app.listen(3000);
+    console.log("mongodb connected");
+  })
   .catch((err) => console.log(err));
 
-// register view engine
+// set view engine
 app.set("view engine", "ejs");
 
-// middleware & static files
+// set directory for static files (css, assets)
 app.use(express.static("public"));
+
+// logger middleware
 app.use(morgan("dev"));
-app.use((req, res, next) => {
-  res.locals.path = req.path;
-  next();
+
+app.get("/", (req, res) => {
+  res.redirect("/blogs");
 });
 
-// mongoose & mongo tests
+app.get("/blogs", (req, res) => {
+  Blog.find()
+    // sort by mongoose timestamps
+    .sort({ createdAt: -1 })
+    .then((result) => {
+      res.render("index", { blogs: result, title: "All Blogs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.get("/blogs/create", (req, res) => {
+  res.render("create", { title: "Create a new blog" });
+});
+
+app.get("/about", (req, res) => {
+  res.render("about", { title: "About" });
+});
+
+// add a blog
 app.get("/add-blog", (req, res) => {
   const blog = new Blog({
-    title: "new blog",
+    title: "new blog 2",
     snippet: "about my new blog",
     body: "more about my new blog",
   });
-
+  // save 'blog' as instance of Blog model
   blog
     .save()
     .then((result) => {
@@ -45,9 +70,12 @@ app.get("/add-blog", (req, res) => {
     });
 });
 
+// find all blogs
 app.get("/all-blogs", (req, res) => {
+  // find all instances of Blog model
   Blog.find()
     .then((result) => {
+      // returns JSON
       res.send(result);
     })
     .catch((err) => {
@@ -55,34 +83,12 @@ app.get("/all-blogs", (req, res) => {
     });
 });
 
+// find instance of Blog by id
 app.get("/single-blog", (req, res) => {
-  Blog.findById("5ea99b49b8531f40c0fde689")
+  Blog.findById("5fd839f082cfaf220f572d2a")
     .then((result) => {
+      // returns JSON
       res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-app.get("/", (req, res) => {
-  res.redirect("/blogs");
-});
-
-app.get("/about", (req, res) => {
-  res.render("about", { title: "About" });
-});
-
-// blog routes
-app.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Create a new blog" });
-});
-
-app.get("/blogs", (req, res) => {
-  Blog.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("index", { blogs: result, title: "All blogs" });
     })
     .catch((err) => {
       console.log(err);
