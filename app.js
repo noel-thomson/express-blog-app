@@ -13,7 +13,7 @@ const dbURI =
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => {
+  .then(() => {
     app.listen(3000);
     console.log("mongodb connected");
   })
