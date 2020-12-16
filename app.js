@@ -24,11 +24,6 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 // logger middleware
 app.use(morgan("dev"));
-// ??
-// app.use((req, res, next) => {
-//   res.locals.path = req.path;
-//   next();
-// });
 
 // routes
 app.get("/", (req, res) => {

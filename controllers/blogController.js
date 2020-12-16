@@ -1,4 +1,4 @@
-const { rest } = require("lodash");
+// const { rest } = require("lodash");
 const Blog = require("../models/blog");
 
 const blogs_index = (req, res) => {
