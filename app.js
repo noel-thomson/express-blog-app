@@ -1,91 +1,101 @@
-const express = require('express');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-const Blog = require('./models/blog');
+const express = require("express");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
+const Blog = require("./models/blog");
 
 // express app
 const app = express();
 
 // connect to mongodb & listen for requests
-const dbURI = "mongodb+srv://netninja:test1234@net-ninja-tuts-del96.mongodb.net/node-tuts";
+const dbURI =
+  "mongodb+srv://johnsmith:mongo1234@cluster0.p9iyl.mongodb.net/blog-db";
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(result => app.listen(3000))
-  .catch(err => console.log(err));
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(3000))
+  .catch((err) => console.log(err));
 
 // register view engine
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
-// middleware & static files
-app.use(express.static('public'));
+// set directory for static files
+app.use(express.static("public"));
+// parses form post body from url into an object
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
-app.use((req, res, next) => {
-  res.locals.path = req.path;
-  next();
+// logger
+app.use(morgan("dev"));
+// ??
+// app.use((req, res, next) => {
+//   res.locals.path = req.path;
+//   next();
+// });
+
+app.get("/", (req, res) => {
+  res.redirect("/blogs");
 });
 
-// routes
-app.get('/', (req, res) => {
-  res.redirect('/blogs');
+app.get("/about", (req, res) => {
+  res.render("about", { title: "About" });
 });
 
-app.get('/about', (req, res) => {
-  res.render('about', { title: 'About' });
+app.get("/blogs/create", (req, res) => {
+  res.render("create", { title: "Create a new blog" });
 });
 
-// blog routes
-app.get('/blogs/create', (req, res) => {
-  res.render('create', { title: 'Create a new blog' });
-});
-
-app.get('/blogs', (req, res) => {
-  Blog.find().sort({ createdAt: -1 })
-    .then(result => {
-      res.render('index', { blogs: result, title: 'All blogs' });
+app.get("/blogs", (req, res) => {
+  // find all instances of Blog
+  Blog.find()
+    .sort({ createdAt: -1 })
+    .then((result) => {
+      res.render("index", { blogs: result, title: "All blogs" });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 });
 
-app.post('/blogs', (req, res) => {
-  // console.log(req.body);
+// post request
+app.post("/blogs", (req, res) => {
+  // req.body is the form submission object
   const blog = new Blog(req.body);
 
-  blog.save()
-    .then(result => {
-      res.redirect('/blogs');
+  blog
+    .save()
+    .then(() => {
+      res.redirect("/blogs");
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 });
 
-app.get('/blogs/:id', (req, res) => {
+app.get("/blogs/:id", (req, res) => {
   const id = req.params.id;
   Blog.findById(id)
-    .then(result => {
-      res.render('details', { blog: result, title: 'Blog Details' });
+    .then((result) => {
+      res.render("details", { blog: result, title: "Blog Details" });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 });
 
-app.delete('/blogs/:id', (req, res) => {
+// delete route
+app.delete("/blogs/:id", (req, res) => {
   const id = req.params.id;
-  
+
   Blog.findByIdAndDelete(id)
-    .then(result => {
-      res.json({ redirect: '/blogs' });
+    // after deleting from db
+    .then(() => {
+      // send redirect route to view as json
+      res.json({ redirect: "/blogs" });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 });
 
 // 404 page
 app.use((req, res) => {
-  res.status(404).render('404', { title: '404' });
+  res.status(404).render("404", { title: "404" });
 });
