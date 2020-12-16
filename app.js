@@ -1,43 +1,48 @@
-const express = require('express');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-const blogRoutes = require('./routes/blogRoutes');
+const express = require("express");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
+const blogRoutes = require("./routes/blogRoutes");
 
 // express app
 const app = express();
 
-// connect to mongodb & listen for requests
-const dbURI = "mongodb+srv://netninja:test1234@net-ninja-tuts-del96.mongodb.net/node-tuts";
+const dbURI =
+  "mongodb+srv://johnsmith:mongo1234@cluster0.p9iyl.mongodb.net/blog-db";
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(result => app.listen(3000))
-  .catch(err => console.log(err));
+// connect to DB and listen to requests
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(3000))
+  .catch((err) => console.log(err));
 
 // register view engine
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
-// middleware & static files
-app.use(express.static('public'));
+// set directory for assets
+app.use(express.static("public"));
+// parse form post from url into an object
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
-app.use((req, res, next) => {
-  res.locals.path = req.path;
-  next();
-});
+// logger middleware
+app.use(morgan("dev"));
+// ??
+// app.use((req, res, next) => {
+//   res.locals.path = req.path;
+//   next();
+// });
 
 // routes
-app.get('/', (req, res) => {
-  res.redirect('/blogs');
-});
-
-app.get('/about', (req, res) => {
-  res.render('about', { title: 'About' });
+app.get("/", (req, res) => {
+  res.redirect("/blogs");
 });
 
 // blog routes
-app.use('/blogs', blogRoutes);
+app.use("/blogs", blogRoutes);
+
+app.get("/about", (req, res) => {
+  res.render("about", { title: "About" });
+});
 
 // 404 page
 app.use((req, res) => {
-  res.status(404).render('404', { title: '404' });
+  res.status(404).render("404", { title: "404" });
 });
